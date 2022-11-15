@@ -12,7 +12,9 @@ const App = () => {
           <Route path='/' component={Files} />
         </Switch>
       </Router>
-      <ToastContainer />
+      <ToastContainer
+        position='bottom-center'
+      />
     </div>
   )
 }

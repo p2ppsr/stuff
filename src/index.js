@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Prompt from '@babbage/react-prompt'
+import Theme from './Theme'
 import App from './App'
 
 ReactDOM.render(
@@ -11,7 +12,9 @@ ReactDOM.render(
     author='Ty J Everett'
     authorUrl='https://tyeverett.com'
   >
-    <App />
+    <Theme>
+      <App />
+    </Theme>
   </Prompt>,
   document.getElementById('root')
 )

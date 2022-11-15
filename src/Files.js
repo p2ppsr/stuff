@@ -2,6 +2,30 @@ import React, { useState, useEffect } from 'react'
 import { useLocation, useHistory, Link } from 'react-router-dom'
 import path from 'path'
 import crypto from 'crypto'
+import {
+  Typography, Divider, List, ListItem, ListItemIcon, ListItemText, TextField, Button, Card, IconButton
+} from '@mui/material'
+import { makeStyles } from '@mui/styles'
+import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder'
+import NoteAddIcon from '@mui/icons-material/NoteAdd'
+import FolderIcon from '@mui/icons-material/Folder'
+import DescriptionIcon from '@mui/icons-material/Description'
+import DeleteIcon from '@mui/icons-material/Delete'
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline'
+import SaveIcon from '@mui/icons-material/Save'
+import { toast } from 'react-toastify'
+
+const useStyles = makeStyles(theme => ({
+  content: theme.templates.page_wrap,
+  top_grid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr auto auto',
+    gridGap: theme.spacing(1),
+    alignItems: 'center',
+    marginBottom: '1em',
+    padding: theme.spacing(2)
+  }
+}), { name: 'Files' })
 
 /* Specification:
 
@@ -46,10 +70,8 @@ const getFile = async p => {
   for (let part = 1; part < parts.length; part++) {
     const node = await get(cur)
     const parsedNode = JSON.parse(node)
-    console.log('parsedNode', parsedNode)
     if (parsedNode.type !== 'folder') return null
     const next = parsedNode.nodes.find(x => x.name === parts[part])
-    console.log('next', next)
     if (!next) return null
     cur = next.id
   }
@@ -68,12 +90,12 @@ const Files = () => {
   const [notFound, setNotFound] = useState(false)
   const location = useLocation()
   const history = useHistory()
+  const classes = useStyles()
   // The filesystem path is after the # symbol
   const currentFilesystemPath = location.pathname
 
   useEffect(() => {
     (async () => {
-      console.log('ping', currentFilesystemPath)
       const contents = await getFile(currentFilesystemPath)
       if (!contents) {
         // If we are in /, we need to create the root directory.
@@ -182,7 +204,15 @@ const Files = () => {
       type: 'file',
       contents: fileContents
     }))
-    history.push(currentFilesystemPath.substring(0, currentFilesystemPath.lastIndexOf('/')))
+    toast.dark(`Changes to "${currentFilesystemPath.substring(
+        currentFilesystemPath.lastIndexOf('/') + 1
+      )}" are saved.`)
+    history.push(
+      currentFilesystemPath.substring(
+        0,
+        currentFilesystemPath.lastIndexOf('/')
+      )
+    )
   }
 
   if (contentLoading) {
@@ -193,32 +223,112 @@ const Files = () => {
   }
   if (displayType === 'folder') {
     return (
-      <div>
-        <h1>{currentFilesystemPath}</h1>
-        <button onClick={handleNewFolder}>new folder</button>
-        <button onClick={handleNewFile}>new file</button>
-        <ul>
+      <div className={classes.content}>
+        <Card className={classes.top_grid}>
+          <Typography variant='h4'>
+            {currentFilesystemPath}
+          </Typography>
+          <Button
+            onClick={handleNewFolder}
+            startIcon={<CreateNewFolderIcon />}
+            variant='contained'
+            size='small'
+          >
+            New Folder
+          </Button>
+          <Button
+            onClick={handleNewFile}
+            startIcon={<NoteAddIcon />}
+            variant='contained'
+            size='small'
+          >
+            new file
+          </Button>
+        </Card>
+        <Divider />
+        <List>
           {currentFilesystemPath !== '/' && (
-            <li><Link to={currentFilesystemPath.substring(0, currentFilesystemPath.lastIndexOf('/'))}>..</Link></li>
+            <ListItem
+              button
+              onClick={() => {
+                history.push(currentFilesystemPath.substring(0, currentFilesystemPath.lastIndexOf('/')))
+              }}
+            >
+              <ListItemIcon>
+                <FolderIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary='..'
+              />
+            </ListItem>
           )}
           {childDirectories.map((x, i) => (
-            <li key={i}>
-              <Link to={path.join(currentFilesystemPath, x.name)}>[{x.type}] {x.name}</Link>
-              <button onClick={() => handleRename(x)}>[rename]</button>
-              <button onClick={() => handleDelete(x)}>[delete]</button>
-            </li>
+            <ListItem
+              key={i}
+              button
+              secondaryAction={
+                <>
+                  <IconButton
+                    onClick={e => {
+                      e.stopPropagation()
+                      handleRename(x)
+                    }}
+                  >
+                    <DriveFileRenameOutlineIcon />
+                  </IconButton>
+                  <IconButton
+                    onClick={e => {
+                      e.stopPropagation()
+                      handleDelete(x)
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </>
+              }
+              onClick={() => {
+                history.push(path.join(
+                  currentFilesystemPath || '',
+                  x.name || ''
+                ))
+              }}
+            >
+              <ListItemIcon>
+                {x.type === 'folder' ? <FolderIcon /> : <DescriptionIcon />}
+              </ListItemIcon>
+              <ListItemText
+                primary={x.name}
+              />
+            </ListItem>
           ))}
-        </ul>
+        </List>
       </div>
     )
   }
 
   if (displayType === 'file') {
     return (
-      <div>
-        <h1>{currentFilesystemPath}</h1>
-        <button onClick={handleSaveFile}>save</button>
-        <textarea value={fileContents} onChange={e => setFileContents(e.target.value)} />
+      <div className={classes.content}>
+        <Card className={classes.top_grid}>
+          <Typography variant='h4'>
+            <DescriptionIcon />{' '}{currentFilesystemPath}
+          </Typography>
+          <Button
+            onClick={handleSaveFile}
+            startIcon={<SaveIcon />}
+            variant='contained'
+            size='small'
+          >
+            Save & Close
+          </Button>
+        </Card>
+        <Divider />
+        <TextField
+          fullWidth
+          multiline
+          value={fileContents}
+          onChange={e => setFileContents(e.target.value)}
+        />
       </div>
     )
   }
