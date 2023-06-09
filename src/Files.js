@@ -14,6 +14,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline'
 import SaveIcon from '@mui/icons-material/Save'
 import { toast } from 'react-toastify'
+import kvstore from 'babbage-kvstore'
 
 const useStyles = makeStyles(theme => ({
   content: theme.templates.page_wrap,
@@ -42,15 +43,18 @@ Nodes cannot contain "/" in their names.
 // Mock Babbage KVStore
 
 const get = async x => {
-  return localStorage[x]
+  return kvstore.get(x)
+  // return localStorage[x]
 }
 
 const set = async (k, v) => {
-  localStorage[k] = v
+  return kvstore.set(k, v)
+  // localStorage[k] = v
 }
 
 const remove = async x => {
-  delete localStorage[x]
+  return kvstore.remove(x)
+  // delete localStorage[x]
 }
 
 // helpers

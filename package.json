@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@babbage/react-prompt": "^0.2.4",
+    "@babbage/react-prompt": "^0.2.10",
     "@emotion/react": "^11.10.5",
     "@mui/icons-material": "^5.10.14",
     "@mui/material": "^5.10.14",
     "@mui/styles": "^5.10.14",
+    "babbage-kvstore": "^1.1.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router": "^5.2.0",
