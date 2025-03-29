@@ -14,7 +14,9 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline'
 import SaveIcon from '@mui/icons-material/Save'
 import { toast } from 'react-toastify'
-import kvstore from 'babbage-kvstore'
+import { KVStorePersonal } from 'babbage-kvstore'
+
+const kvstore = new KVStorePersonal(undefined, 'filesystem')
 
 const useStyles = makeStyles(theme => ({
   content: theme.templates.page_wrap,
@@ -160,13 +162,13 @@ const Files = () => {
     const fileName = window.prompt('File name')
     const newID = getID()
     const newChildDirectories = [
-        ...childDirectories,
+      ...childDirectories,
       {
         type: 'file',
         name: fileName,
         id: newID
       }
-      ]
+    ]
     await set(currentFileID, JSON.stringify({
       type: 'folder',
       nodes: newChildDirectories
@@ -209,8 +211,8 @@ const Files = () => {
       contents: fileContents
     }))
     toast.dark(`Changes to "${currentFilesystemPath.substring(
-        currentFilesystemPath.lastIndexOf('/') + 1
-      )}" are saved.`)
+      currentFilesystemPath.lastIndexOf('/') + 1
+    )}" are saved.`)
     history.push(
       currentFilesystemPath.substring(
         0,
