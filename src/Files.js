@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useLocation, useHistory, Link } from 'react-router-dom'
+import { useLocation, useHistory } from 'react-router-dom'
 import path from 'path'
 import crypto from 'crypto'
 import {
@@ -14,9 +14,9 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline'
 import SaveIcon from '@mui/icons-material/Save'
 import { toast } from 'react-toastify'
-import { KVStorePersonal } from 'babbage-kvstore'
+import { LocalKVStore } from '@bsv/sdk'
 
-const kvstore = new KVStorePersonal(undefined, 'filesystem')
+const kvstore = new LocalKVStore(undefined, 'filesystem')
 
 const useStyles = makeStyles(theme => ({
   content: theme.templates.page_wrap,
